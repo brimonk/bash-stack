@@ -3,7 +3,7 @@ touch data/list
 DATA=$(cat data/list)
 
 listify() {
-  awk '{ print "<li><button hx-delete=\"/list\" hx-swap=\"delete\" hx-target=\"closest li\" hx-vals='\''{\"item\": \""$1"\"}'\''>X</button>"; $1 = ""; print $0"</li>" }'
+  awk '{ printf "<li><button hx-delete=\"/list\" hx-swap=\"delete\" hx-target=\"closest li\" hx-vals='\''{\"item\": \"%s\"}'\''>X</button>", $1; $1 = ""; printf "%s</li>\n", $0; }'
 }
 
 if [[ "$REQUEST_METHOD" == "DELETE" ]]; then
