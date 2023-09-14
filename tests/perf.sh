@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PORT=${PORT:-3000}
-COUNT=1000
+COUNT=500
 RUNNERS=4
 
 cd "${0%/*}"
@@ -25,6 +25,8 @@ while [ $RC -ne 0 ]; do
     RC=$?
     echo "RC is $RC"
 done
+
+START=$(date +%s%N | cut -b1-13)
 
 runner() {
     # now we get to test a ton :)
@@ -51,5 +53,19 @@ for t in $(seq 1 $RUNNERS); do
 done
 
 wait $WORKERS
+
+END=$(date +%s%N | cut -b1-13)
+
+# both a PUT and a DELETE in this scenario
+REQUESTS=$(($COUNT * $RUNNERS * 2))
+ELAPSED=$(($END - $START))
+echo "Start time   : $START"
+echo "End time     : $END"
+echo "Requests     : $REQUESTS"
+echo "Elapsed time : $ELAPSED"
+# echo "Requests/sec : $(awk -v r=$REQUESTS -v e=$ELAPSED 'END { printf "%f\n", $r / $e}')"
+
+pkill tcpserver
 pkill strace # ?
 pkill -P $TESTPID
+wait $TESTPID
